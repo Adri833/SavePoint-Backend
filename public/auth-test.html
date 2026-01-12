@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SavePoint Auth Test</title>
+  </head>
+  <body>
+    <h1>SavePoint Auth Test</h1>
+
+    <h2>Login</h2>
+    <input id="email" type="email" placeholder="Email" />
+    <br /><br />
+    <input id="password" type="password" placeholder="Password" />
+    <br /><br />
+    <button onclick="login()">Login</button>
+
+    <h2>Resultado</h2>
+    <pre id="result"></pre>
+
+    <button onclick="getData()">GET /test-supabase</button>
+
+    <script>
+      let token = null;
+
+      async function login() {
+        try {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+          document.getElementById("result").textContent = JSON.stringify(
+            data,
+            null,
+            2
+          );
+
+          if (data.token) {
+            token = data.token;
+            alert("Login correcto, token guardado");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error en login: " + err);
+        }
+      }
+
+      async function getData() {
+        
+
+        const res = await fetch("/test-supabase", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        document.getElementById("result").textContent = JSON.stringify(
+          data,
+          null,
+          2
+        );
+      }
+    </script>
+  </body>
+</html>

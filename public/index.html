@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Insertar fila en Supabase</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input, button { padding: 0.5rem; font-size: 1rem; }
+    button { cursor: pointer; }
+    pre { background: #f4f4f4; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Insertar fila en Supabase</h1>
+
+  <form id="testForm">
+    <label for="name">Nombre:</label>
+    <input type="text" id="name" name="name" required>
+    <button type="submit">Insertar</button>
+  </form>
+
+  <pre id="result"></pre>
+
+  <script>
+    const form = document.getElementById('testForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+
+      try {
+        const res = await fetch('/test-supabase', {  // <--- apunta al endpoint correcto
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        const data = await res.json();
+        result.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        result.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
