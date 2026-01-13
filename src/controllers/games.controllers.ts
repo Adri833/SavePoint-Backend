@@ -23,23 +23,34 @@ const scoreGame = (game: any, query: string) => {
 };
 
 export const searchGamesController = async (req: Request, res: Response) => {
-    try {
-        const { query } = req.query;
+  try {
+    const { query } = req.query;
 
-        if (!query || typeof query !== 'string') {
-            return res.status(400).json({ success: false, error: 'Query requerida' });
-        }
-
-        const games = await searchGames(query);
-
-        // Ordenar por relevancia
-        const rankedGames = games.sort((a: any, b: any) => scoreGame(b, query) - scoreGame(a, query));
-
-        res.json(rankedGames);
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Error al buscar juegos' });
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Query requerida',
+      });
     }
+
+    const games = await searchGames(query);
+
+    const rankedGames = games.sort(
+      (a: any, b: any) => scoreGame(b, query) - scoreGame(a, query)
+    );
+
+    res.json({
+      success: true,
+      games: rankedGames,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Error al buscar juegos',
+    });
+  }
 };
+
 
 export const getGameByIdController = async (req: Request, res: Response) => {
     try {

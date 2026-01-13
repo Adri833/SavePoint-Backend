@@ -5,7 +5,8 @@ import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { register, login, authMiddleware, me } from './auth';
 import gamesRoutes from './routes/games.routes';
- 
+import userGamesRoutes from './routes/userGamesRoutes';
+
 dotenv.config(); // Carga variables del .env
 
 const app = express();
@@ -17,6 +18,9 @@ app.use(express.json());
 app.post('/auth/register', register);
 app.post('/auth/login', login);
 app.get('/auth/me', authMiddleware, me);
+
+// === Rutas de juegos del usuario ===
+app.use('/user/games', userGamesRoutes);
 
 // Servir archivos estáticos desde 'public'
 app.use(express.static(path.join(__dirname, '../public')));

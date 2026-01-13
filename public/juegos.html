@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gestión de Juegos</title>
+  </head>
+  <body>
+    <h1>Buscar Juegos</h1>
+    <input type="text" id="query" placeholder="Nombre del juego" />
+    <button id="buscar">Buscar</button>
+
+    <h2>Resultados</h2>
+    <ul id="resultados"></ul>
+
+    <h2>Mi Lista</h2>
+    <ul id="miLista"></ul>
+
+    <script>
+      const token = localStorage.getItem("token");
+      if (!token) alert("Debes hacer login primero");
+
+      const resultadosEl = document.getElementById("resultados");
+      const miListaEl = document.getElementById("miLista");
+
+      // Buscar juegos
+      document.getElementById("buscar").addEventListener("click", async () => {
+        const query = document.getElementById("query").value;
+
+        const res = await fetch(
+          `/games/search?query=${encodeURIComponent(query)}`
+        );
+        const data = await res.json();
+
+        resultadosEl.innerHTML = "";
+
+        if (!data.success) {
+          alert(data.error || "Error al buscar juegos");
+          return;
+        }
+
+        data.games.forEach((game) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+      ${game.name}
+      <button onclick="addGame('${game.id}')">Añadir</button>
+    `;
+          resultadosEl.appendChild(li);
+        });
+      });
+
+      // Añadir juego
+      async function addGame(game_id) {
+        const res = await fetch("/user/games", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({ game_id }),
+        });
+
+        const data = await res.json();
+        alert(data.success ? "Juego añadido" : data.error);
+        cargarMiLista();
+      }
+
+      // Cargar lista
+      async function cargarMiLista() {
+        const res = await fetch("/user/games", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        const data = await res.json();
+        miListaEl.innerHTML = "";
+
+        if (!data.success) return;
+
+        data.games.forEach((item) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            ${item.game.name}
+            <button onclick="eliminar('${item.user_game_id}')">Eliminar</button>
+          `;
+          miListaEl.appendChild(li);
+        });
+      }
+
+      // Eliminar juego (USA user_game_id)
+      async function eliminar(userGameId) {
+        const res = await fetch(`/user/games/${userGameId}`, {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        const data = await res.json();
+        alert(data.success ? "Eliminado" : data.error);
+        cargarMiLista();
+      }
+
+      cargarMiLista();
+    </script>
+  </body>
+</html>
