@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { searchGames, getGameById } from '../api/gameAPI';
+import { searchGames, getGameById, getTrendingGames } from '../api/gameAPI';
 
 /* Calcula un puntaje de relevancia para un juego según query */
 const scoreGame = (game: any, query: string) => {
@@ -59,5 +59,23 @@ export const getGameByIdController = async (req: Request, res: Response) => {
         res.json(game);
     } catch (error) {
         res.status(500).json({ success: false, error: 'Error al obtener el juego' });
+    }
+};
+
+export const getTrendingGamesController = async (req: Request, res: Response) => {
+    try {
+        const games = await getTrendingGames();
+
+        const mappedGames = games.map((game: any) => ({
+            id: game.id,
+            name: game.name,
+            image: game.background_image,
+            rating: game.rating,
+            released: game.released,
+        }));
+
+        res.json(mappedGames);
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Error al obtener juegos de tendencia' });
     }
 };

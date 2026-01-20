@@ -19,3 +19,10 @@ export const getGameById = async (id: string) => {
   const response = await rawgAPI.get(`/games/${id}`);
   return response.data;
 };
+
+export const getTrendingGames = async () => {
+  const response = await rawgAPI.get('/games', {
+    params: { ordering: '-added', page_size: 15, dates: '2025-01-01,2025-12-31' },
+  });
+  return response.data.results;
+};
