@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { searchGames, getGameById, getTrendingGames } from '../api/gameAPI';
+import { getUpcomingGames2026 } from '../api/gameAPI';
 
 /* Calcula un puntaje de relevancia para un juego según query */
 const scoreGame = (game: any, query: string) => {
@@ -78,4 +79,25 @@ export const getTrendingGamesController = async (req: Request, res: Response) =>
     } catch (error) {
         res.status(500).json({ success: false, error: 'Error al obtener juegos de tendencia' });
     }
+};
+
+export const getUpcomingGames2026Controller = async (req: Request, res: Response) => {
+  try {
+    const games = await getUpcomingGames2026();
+
+    const sortedGames = games.sort((a: any, b: any) => (b.rating || 0) - (a.rating || 0));
+
+    const mappedGames = sortedGames.map((game: any) => ({
+      id: game.id,
+      name: game.name,
+      image: game.background_image,
+      rating: game.rating,
+      released: game.released,
+    }));
+
+    res.json(mappedGames);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Error al obtener juegos más esperados 2026' });
+  }
 };

@@ -26,3 +26,15 @@ export const getTrendingGames = async () => {
   });
   return response.data.results;
 };
+
+export const getUpcomingGames2026 = async () => {
+  const response = await rawgAPI.get('/games', {
+    params: {
+      ordering: '-added', 
+      page_size: 15,
+      dates: '2026-01-01,2026-12-31'
+    },
+  });
+
+  return response.data.results;
+};
