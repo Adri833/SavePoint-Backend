@@ -1,4 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
+import {
+  getLastYearRange,
+  getCurrentWeekRange,
+  getFromTodayToNextYear,
+} from "../utils/dateUtils";
 
 const rawgAPI = axios.create({
   baseURL: process.env.RAWG_BASE_URL,
@@ -8,7 +13,7 @@ const rawgAPI = axios.create({
 });
 
 export const searchGames = async (query: string) => {
-  const response = await rawgAPI.get('/games', {
+  const response = await rawgAPI.get("/games", {
     params: { search: query },
   });
 
@@ -21,18 +26,37 @@ export const getGameById = async (id: string) => {
 };
 
 export const getTrendingGames = async () => {
-  const response = await rawgAPI.get('/games', {
-    params: { ordering: '-added', page_size: 15, dates: '2025-01-01,2025-12-31' },
+  const response = await rawgAPI.get("/games", {
+    params: {
+      ordering: "-added",
+      page_size: 15,
+      dates: getLastYearRange(),
+    },
   });
+
   return response.data.results;
 };
 
-export const getUpcomingGames2026 = async () => {
-  const response = await rawgAPI.get('/games', {
+export const getUpcomingGames = async () => {
+  const response = await rawgAPI.get("/games", {
     params: {
-      ordering: '-added', 
+      ordering: "-added",
       page_size: 15,
-      dates: '2026-01-01,2026-12-31'
+      dates: getFromTodayToNextYear(),
+    },
+  });
+
+  return response.data.results;
+};
+
+export const getGamesThisWeek = async () => {
+  const weekRange = getCurrentWeekRange();
+
+  const response = await rawgAPI.get("/games", {
+    params: {
+      ordering: "-added",
+      page_size: 15,
+      dates: getCurrentWeekRange(),
     },
   });
 

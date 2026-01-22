@@ -85,7 +85,7 @@
         });
       }
 
-      // Eliminar juego (USA user_game_id)
+      // Eliminar juego (utiliza user_game_id)
       async function eliminar(userGameId) {
         const res = await fetch(`/user/games/${userGameId}`, {
           method: "DELETE",

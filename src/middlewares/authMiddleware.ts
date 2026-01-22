@@ -16,7 +16,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     req.user = {
       id: data.user.id,
       email: data.user.email ?? undefined
-    }; // ahora TS lo reconoce
+    };
     next();
   } catch (err: any) {
     return res.status(401).json({ success: false, error: err.message });
